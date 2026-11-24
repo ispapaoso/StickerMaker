@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StickerMaker</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect x=%274%27 y=%274%27 width=%2756%27 height=%2756%27 rx=%2716%27 fill=%27%23f5dce7%27/%3E%3Crect x=%2717%27 y=%2713%27 width=%2730%27 height=%2738%27 rx=%275%27 fill=%27white%27 stroke=%27%237956a8%27 stroke-width=%273%27/%3E%3Ccircle cx=%2728%27 cy=%2727%27 r=%275%27 fill=%27%23f2a9c6%27/%3E%3Cpath d=%27M24 40h16M24 45h10%27 stroke=%27%237956a8%27 stroke-width=%273%27 stroke-linecap=%27round%27/%3E%3Cpath d=%27M49 8v8m-4-4h8%27 stroke=%27%23d69a36%27 stroke-width=%273%27 stroke-linecap=%27round%27/%3E%3C/svg%3E">
+<style>
+:root{--ink:#292638;--muted:#777487;--pink:#f5dce7;--lav:#e9e3f7;--paper:#fff;--line:#e8e4ed;--accent:#7956a8}
+*{box-sizing:border-box}body{margin:0;background:#faf8fc;color:var(--ink);font:15px/1.45 "Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(120deg,#f8e8ef,#eee8fb);padding:26px 20px 22px;text-align:center}
+header h1{margin:0;font-size:32px;letter-spacing:-.7px} .brand{display:flex;align-items:center;justify-content:center;gap:12px}.brand-logo{width:54px;height:54px;filter:drop-shadow(0 3px 4px #5b42601a)}header p{margin:5px 0 0;color:#665d72}
+main{max-width:1100px;margin:22px auto;padding:0 16px;display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:20px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 5px 20px #3020440a}
+h2{font-size:18px;margin:0 0 14px}.field{margin:12px 0}.field label{display:block;font-weight:600;margin-bottom:5px}
+input,select,button{font:inherit}input[type=number],select{width:100%;padding:10px 11px;border:1px solid #d9d3e2;border-radius:10px;background:white;color:var(--ink)}
+input[type=file]{width:100%;padding:9px;border:1px dashed #c9bfd6;border-radius:10px;background:#fcfaff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hint{font-size:12px;color:var(--muted)}
+button{border:0;border-radius:11px;padding:11px 14px;cursor:pointer;font-weight:700}
+.primary{background:var(--accent);color:#fff;width:100%;margin-top:12px}.secondary{background:#f0ebf6;color:#514366}.danger{background:#fff0f2;color:#9c4058;padding:7px 10px}
+.sticker{border:1px solid var(--line);border-radius:13px;padding:12px;margin:12px 0;display:grid;grid-template-columns:68px 1fr;gap:12px;align-items:start}
+.thumb{width:68px;height:68px;object-fit:contain;background:#f7f5f9;border-radius:8px}
+.sticker strong{display:block;margin-bottom:6px}.sticker .row{gap:7px}.sticker .field{margin:5px 0}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.preview-wrap{background:#f0edf4;border-radius:14px;padding:18px;display:flex;justify-content:center;overflow:auto;min-height:460px}
+#sheet{position:relative;background:white;box-shadow:0 3px 18px #251b3020;flex:none;overflow:hidden}
+.placed{position:absolute;object-fit:fill;outline:1px dashed #c9c3d0;outline-offset:-1px}
+.stats{font-size:13px;color:var(--muted);margin:10px 0}
+.notice{background:#fff7df;border:1px solid #f0dfaa;padding:10px 12px;border-radius:10px;font-size:13px;margin-top:12px}
+.empty{color:var(--muted);text-align:center;padding:55px 15px}
+@media(max-width:800px){main{grid-template-columns:1fr}.preview-wrap{min-height:350px}}
+@media print{
+ body{background:#fff}
+ header,main .controls,.preview-head,.stats,.notice{display:none!important}
+ main{display:block;margin:0;padding:0;max-width:none}
+ main .panel{border:0;padding:0;box-shadow:none}
+ .preview-wrap{display:block;padding:0;margin:0;background:white;overflow:visible;min-height:0}
+ #sheet{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<header><div class="brand"><svg class="brand-logo" viewBox="0 0 64 64" role="img" aria-label="Logo StickerMaker"><rect x="3" y="3" width="58" height="58" rx="17" fill="#f5dce7"/><rect x="16" y="12" width="32" height="41" rx="6" fill="#fff" stroke="#7956a8" stroke-width="2.5"/><path d="M38 12v10h10" fill="#eee8fb"/><circle cx="27" cy="29" r="5.5" fill="#f2a9c6"/><path d="M23 41h17M23 46h11" stroke="#7956a8" stroke-width="2.7" stroke-linecap="round"/><path d="M50 7v9m-4.5-4.5h9" stroke="#d69a36" stroke-width="2.8" stroke-linecap="round"/><path d="m10 20 1.5 3.5L15 25l-3.5 1.5L10 30l-1.5-3.5L5 25l3.5-1.5z" fill="#d69a36"/></svg><h1>StickerMaker</h1></div><p>Armá tu hoja de stickers en unos poquitos pasos</p></header>
+<main>
+<section class="panel controls">
+  <h2>1. Preparar la hoja</h2>
+  <div class="field"><label for="paper">Tamaño de papel</label>
+    <select id="paper"><option value="A3" selected>A3 · 29,7 × 42 cm</option><option value="A4">A4 · 21 × 29,7 cm</option><option value="Letter">Carta · 21,59 × 27,94 cm</option></select>
+  </div>
+  <div class="row">
+    <div class="field"><label for="gap">Separación (cm)</label><input id="gap" type="number" min="0" max="3" step=".1" value="0.3"></div>
+    <div class="field"><label for="margin">Margen (cm)</label><input id="margin" type="number" min="0" max="3" step=".1" value="0.5"></div>
+  </div>
+  <p class="hint">La separación deja espacio para recortar. El margen evita acercar los diseños al borde.</p>
+  <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+  <h2>2. Agregar stickers</h2>
+  <div class="field"><label for="files">Elegir una o varias imágenes</label><input id="files" type="file" accept="image/*" multiple></div>
+  <p class="hint">Después podés ponerle a cada imagen su propio tamaño y cantidad.</p>
+  <div id="items"><div class="empty">Todavía no agregaste stickers.<br>¡Elegí algunas imágenes para empezar!</div></div>
+  <button class="secondary" id="addMore" style="width:100%;display:none">＋ Agregar más imágenes</button>
+  <button class="primary" id="print">🖨️ Imprimir / Guardar como PDF</button>
+  <div class="notice">En la ventana de impresión elegí “Guardar como PDF” o tu impresora. Usá <b>Tamaño real / Escala 100%</b> y desactivá “Ajustar a página”.</div>
+</section>
+<section class="panel">
+  <div class="toolbar preview-head"><h2 style="margin:0">3. Vista previa</h2><span class="hint" id="orientation">A3 vertical</span></div>
+  <div class="stats" id="stats">Agregá imágenes para ver cómo quedan acomodadas.</div>
+  <div class="preview-wrap"><div id="sheet"><div class="empty">Tu hoja aparecerá acá</div></div></div>
+  <div class="stats">La vista previa es orientativa. Las medidas finales se conservan al imprimir en escala 100%.</div>
+</section>
+</main>
+<script>
+const sizes={A3:[297,420],A4:[210,297],Letter:[215.9,279.4]};
+const items=[];let nextId=1;
+const $=id=>document.getElementById(id);
+function cm(v){return Math.max(0,Number(v)||0)}
+function addFiles(files){for(const file of files){if(!file.type.startsWith('image/'))continue;const reader=new FileReader();reader.onload=()=>{const im=new Image();im.onload=()=>{items.push({id:nextId++,name:file.name,src:reader.result,w:5,h:5,qty:1,nw:im.naturalWidth,nh:im.naturalHeight});renderItems();layout()};im.src=reader.result};reader.readAsDataURL(file)}}
+$('files').addEventListener('change',e=>{addFiles([...e.target.files]);e.target.value=''});
+$('addMore').onclick=()=>$('files').click();
+function renderItems(){const host=$('items');host.innerHTML='';$('addMore').style.display=items.length?'block':'none';
+if(!items.length){host.innerHTML='<div class="empty">Todavía no agregaste stickers.</div>';return}
+items.forEach(it=>{const el=document.createElement('div');el.className='sticker';el.innerHTML=`<img class="thumb" src="${it.src}"><div><strong title="${escapeHtml(it.name)}">${escapeHtml(it.name)}</strong><div class="row"><div class="field"><label>Ancho (cm)</label><input type="number" min=".1" max="100" step=".1" value="${it.w}" data-k="w"></div><div class="field"><label>Alto (cm)</label><input type="number" min=".1" max="100" step=".1" value="${it.h}" data-k="h"></div></div><div class="row"><div class="field"><label>Cantidad</label><input type="number" min="1" max="200" step="1" value="${it.qty}" data-k="qty"></div><div class="field" style="display:flex;align-items:end"><button class="danger" style="width:100%">Quitar</button></div></div></div>`;
+el.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{it[inp.dataset.k]=Math.max(inp.dataset.k==='qty'?1:.1,Number(inp.value)||1);inp.value=it[inp.dataset.k];layout()}));
+el.querySelector('button').onclick=()=>{items.splice(items.findIndex(x=>x.id===it.id),1);renderItems();layout()};host.appendChild(el)})}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function layout(){
+ const [pw,ph]=sizes[$('paper').value],gap=cm($('gap').value)*10,margin=cm($('margin').value)*10;
+ const sheet=$('sheet');sheet.innerHTML='';sheet.style.width=pw+'mm';sheet.style.height=ph+'mm';
+ const usableW=pw-2*margin,usableH=ph-2*margin;let x=margin,y=margin,rowH=0,placed=0,overflow=0;
+ const copies=[];items.forEach(it=>{for(let n=0;n<Math.min(200,Math.floor(it.qty)||1);n++)copies.push(it)});
+ // Shelf packing; rotate a sticker when that lets it fit in the current row.
+ copies.forEach(it=>{
+  let w=it.w*10,h=it.h*10,rot=false;
+  if(w>usableW||h>usableH){overflow++;return}
+  if(x+w>pw-margin){
+    if(h<=usableH-y && w<=usableW){x=margin;y+=rowH+gap;rowH=0}
+    else if(h>usableH-y && w<=usableW-y){/* normal next row handled below */}
+    else if(h>usableH-y && w<=usableW && h>usableH){overflow++;return}
+    else {x=margin;y+=rowH+gap;rowH=0}
+  }
+  if(y+h>ph-margin){
+    // Try rotated orientation on the current/new row if it fits.
+    if(it.h*10<=usableW && it.w*10<=usableH-y && x+it.h*10<=pw-margin){w=it.h*10;h=it.w*10;rot=true}
+    else if(x===margin && it.h*10<=usableW && it.w*10<=usableH){w=it.h*10;h=it.w*10;rot=true}
+    else {overflow++;return}
+  }
+  if(x+w>pw-margin){x=margin;y+=rowH+gap;rowH=0}
+  if(y+h>ph-margin){overflow++;return}
+  const img=document.createElement('img');img.className='placed';img.src=it.src;img.alt=it.name;
+  img.style.left=x+'mm';img.style.top=y+'mm';img.style.width=w+'mm';img.style.height=h+'mm';
+  if(rot){img.style.transform='rotate(90deg)';img.style.transformOrigin='center';img.style.width=h+'mm';img.style.height=w+'mm';img.style.left=(x+(w-h)/2)+'mm';img.style.top=(y+(h-w)/2)+'mm'}
+  sheet.appendChild(img);placed++;x+=w+gap;rowH=Math.max(rowH,h);
+ });
+ $('orientation').textContent=$('paper').value+' · '+pw+' × '+ph+' mm';
+ $('stats').textContent=items.length?`${placed} sticker(s) ubicados · ${overflow?overflow+' no entran con estas medidas. Probá cambiar el tamaño, cantidad o papel.':'¡Todo entra en la hoja!'}`:'Agregá imágenes para ver cómo quedan acomodadas.';
+ if(!items.length)sheet.innerHTML='<div class="empty">Tu hoja aparecerá acá</div>';
+}
+['paper','gap','margin'].forEach(id=>$(id).addEventListener('change',layout));
+$('print').onclick=()=>{if(!items.length){alert('Primero agregá al menos una imagen.');return}
+const [w,h]=sizes[$('paper').value];document.querySelector('style#printstyle')?.remove();const st=document.createElement('style');st.id='printstyle';st.textContent=`@page{size:${w}mm ${h}mm;margin:0}`;document.head.appendChild(st);window.print()};
+window.addEventListener('afterprint',()=>document.querySelector('#printstyle')?.remove());
+layout();
+</script>
+</body></html>
